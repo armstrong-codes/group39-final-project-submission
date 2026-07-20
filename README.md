@@ -2,7 +2,7 @@
 
 ElimuPath is a Flutter and Firebase platform that helps students discover
 schools and helps schools receive and review student applications. Users select
-whether they are joining as a *Student* or a *School* during registration,
+whether they are joining as a _Student_ or a _School_ during registration,
 then receive an experience designed for that account type.
 
 ## Main features
@@ -14,7 +14,7 @@ then receive an experience designed for that account type.
 - Browse, search, and filter schools.
 - View school details, fees, facilities, available spaces, and combinations.
 - Identify approved schools using the verified-school badge.
-- Like schools and view them on the *Liked schools* page.
+- Like schools and view them on the _Liked schools_ page.
 - Apply to a school and optionally attach a transcript.
 - Follow application statuses: submitted, approved, on hold, or denied.
 
@@ -56,7 +56,7 @@ to display reliably in the emulator.
 
 ## Project structure
 
-text
+```text
 lib/
   data/       Firebase and demo backend implementations
   models/     User, school, application, announcement, and favorite models
@@ -67,17 +67,17 @@ assets/
   images/     Branding, fallback, and bundled school images
 test/         Backend and widget tests
 tool/         Firestore data maintenance scripts
-
+```
 
 ## Firestore collections
 
-| Collection | Purpose |
-| --- | --- |
-| users | Student and school administrator profiles |
-| schools | School information, verification, facilities, and availability |
-| applications | Student applications and school review status |
-| favorites | Student-to-school liked relationships |
-| announcements | Announcements posted by schools |
+| Collection    | Purpose                                                        |
+| ------------- | -------------------------------------------------------------- |
+| users         | Student and school administrator profiles                      |
+| schools       | School information, verification, facilities, and availability |
+| applications  | Student applications and school review status                  |
+| favorites     | Student-to-school liked relationships                          |
+| announcements | Announcements posted by schools                                |
 
 Document IDs are used as the ERD primary keys. Relationship fields such as
 studentId, schoolId, userId, ownerId, and postedBy act as foreign
@@ -87,35 +87,35 @@ keys. See [FIRESTORE_SCHEMA.md](FIRESTORE_SCHEMA.md) for the complete schema.
 
 The checked-in Firebase configuration targets:
 
-text
+```text
 elimupath-733f9
-
+```
 
 Install the Firebase CLI and authenticate:
 
-sh
+```sh
 npm install --global firebase-tools
 firebase login
 firebase use elimupath-733f9
-
+```
 
 Deploy Firestore rules and indexes:
 
-sh
+```sh
 firebase deploy --only firestore:rules,firestore:indexes
-
+```
 
 Deploy Storage rules after Firebase Storage has been initialized:
 
-sh
+```sh
 firebase deploy --only storage
-
+```
 
 ### Firebase Storage requirement
 
 Profile pictures, school-uploaded pictures, and transcripts require a Firebase
 Storage bucket. Enable billing if Firebase requests it, then open the Firebase
-Console for elimupath-733f9, select *Storage, and click **Get started*.
+Console for elimupath-733f9, select _Storage, and click \*\*Get started_.
 
 Until Storage is initialized, account details and applications still save, but
 optional uploaded files are skipped after a timeout and the app displays a
@@ -125,38 +125,38 @@ warning. Bundled school-card images do not require Firebase Storage.
 
 Requirements:
 
-- Flutter SDK compatible with Dart ^3.8.1
+- Flutter SDK compatible with Dart ^3.12.0
 - Android Studio or another supported Flutter development environment
 - An Android emulator, physical device, browser, or desktop target
 
 Install packages:
 
-sh
+```sh
 flutter pub get
-
+```
 
 Run the app:
 
-sh
+```sh
 flutter run
-
+```
 
 When adding or changing bundled assets, perform a complete rebuild:
 
-sh
+```sh
 flutter clean
 flutter pub get
 flutter run
-
+```
 
 Hot reload cannot add new files to an already compiled asset bundle.
 
 ## Tests and analysis
 
-sh
+```sh
 flutter analyze
 flutter test
-
+```
 
 The test suite includes document-model mapping and an end-to-end demo backend
 flow covering sign-in, favorites, application submission, and school review.
@@ -178,7 +178,6 @@ Example:
 
 sh
 node tool/seed_schools.js
-
 
 ## Account routing
 

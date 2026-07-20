@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:group39_final_project_submission/widgets/common.dart';
+
 import 'package:group39_final_project_submission/app_theme.dart';
 import 'package:group39_final_project_submission/screens/admin_screens.dart';
 import 'package:group39_final_project_submission/screens/auth_screens.dart';
@@ -57,7 +59,23 @@ void main() {
             const AssetImage('assets/images/brand-gradient.png'),
             context,
           ),
+          precacheImage(
+            const AssetImage('assets/images/brand-lime.png'),
+            context,
+          ),
+          precacheImage(
+            const AssetImage('assets/images/brand-teal.png'),
+            context,
+          ),
+          precacheImage(
+            const AssetImage('assets/images/brand-white.png'),
+            context,
+          ),
           precacheImage(const AssetImage('assets/images/school.png'), context),
+          precacheImage(
+            const AssetImage('assets/images/schools/school_01.jpg'),
+            context,
+          ),
         ]);
       });
       await tester.pumpAndSettle();
