@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # group39_final_project_submission
 
 A new Flutter project.
@@ -15,3 +16,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# group39-final-project-submission
+>>>>>>> 6a621db8ab07bd98c75eca3211a135eea1c5ae3d
