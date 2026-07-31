@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      ).data;
+    }
+
+    function isSchoolAdmin(schoolId) {
+      return signedIn()
+        && profile().role == 'schoolAdmin'
+        && profile().schoolId == schoolId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    match /users/{userId}/profile/{fileName} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow write: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024
+        && isImage();
+    }
+
+    match /applications/{studentId}/{schoolId}/{fileName} {
+      allow read: if signedIn()
+        && (
+          request.auth.uid == studentId
+          || isSchoolAdmin(schoolId)
+        );
+      allow write: if signedIn()
+        && request.auth.uid == studentId
+        && request.resource.size < 10 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf'
+        );
+    }
+
+    match /schools/{schoolId}/{fileName} {
+      allow read: if signedIn();
+      allow write: if isSchoolAdmin(schoolId)
+        && request.resource.size < 8 * 1024 * 1024
+        && isImage();
+    }
+  }
+}

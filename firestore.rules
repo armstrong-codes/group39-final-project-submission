@@ -1,0 +1,132 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(userId) {
+      return /databases/$(database)/documents/users/$(userId);
+    }
+
+    function hasProfile() {
+      return signedIn() && exists(userPath(request.auth.uid));
+    }
+
+    function currentProfile() {
+      return get(userPath(request.auth.uid)).data;
+    }
+
+    function isStudent() {
+      return hasProfile() && currentProfile().role == 'student';
+    }
+
+    function isSchoolAdmin(schoolId) {
+      return hasProfile()
+        && currentProfile().role == 'schoolAdmin'
+        && currentProfile().schoolId == schoolId;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && (
+          (request.resource.data.role == 'student'
+            && request.resource.data.schoolId == null)
+          || (request.resource.data.role == 'schoolAdmin'
+            && request.resource.data.schoolId == request.auth.uid)
+        );
+
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.schoolId == resource.data.schoolId
+        && request.resource.data.email == resource.data.email;
+
+      allow delete: if false;
+
+    }
+
+    match /favorites/{favoriteId} {
+      allow get: if signedIn()
+        && favoriteId.matches(request.auth.uid + '_.*');
+      allow list: if signedIn()
+        && resource.data.userId == request.auth.uid;
+      allow create: if isStudent()
+        && request.resource.data.userId == request.auth.uid
+        && favoriteId == request.auth.uid + '_'
+          + request.resource.data.schoolId
+        && request.resource.data.keys().hasOnly(['userId', 'schoolId', 'addedAt']);
+      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+      allow update: if false;
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if signedIn();
+      allow create: if isSchoolAdmin(request.resource.data.schoolId)
+        && request.resource.data.postedBy == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'schoolId', 'title', 'body', 'postedAt', 'postedBy'
+        ]);
+      allow update, delete: if isSchoolAdmin(resource.data.schoolId)
+        && resource.data.postedBy == request.auth.uid;
+    }
+
+    match /schools/{schoolId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && schoolId == request.auth.uid
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.adminId == request.auth.uid
+        && getAfter(userPath(request.auth.uid)).data.role == 'schoolAdmin'
+        && getAfter(userPath(request.auth.uid)).data.schoolId == schoolId;
+      allow delete: if false;
+      allow update: if isSchoolAdmin(schoolId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.adminId == resource.data.adminId
+        && request.resource.data.verified == resource.data.verified;
+    }
+
+    match /applications/{applicationId} {
+      allow create: if isStudent()
+        && request.resource.data.studentId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasAll([
+          'studentId',
+          'studentName',
+          'studentEmail',
+          'educationLevel',
+          'currentSchool',
+          'schoolId',
+          'schoolName',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ]);
+
+      allow read: if signedIn()
+        && (
+          resource.data.studentId == request.auth.uid
+          || isSchoolAdmin(resource.data.schoolId)
+        );
+
+      allow update: if isSchoolAdmin(resource.data.schoolId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status',
+          'updatedAt',
+          'reviewedBy'
+        ])
+        && request.resource.data.status in [
+          'pending',
+          'approved',
+          'onHold',
+          'denied'
+        ];
+
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12012106326",
+    "project_id": "elimupath-733f9",
+    "storage_bucket": "elimupath-733f9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12012106326:android:f973b7bf82e3d38544c1f7",
+        "android_client_info": {
+          "package_name": "com.example.group39_final_project_submission"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_VHTEj9t9rSTN_LRhQQxT_IrPugIhWbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
